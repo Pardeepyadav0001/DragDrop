@@ -55,7 +55,7 @@ function clearForm() {
       document.getElementById('Gender').value = jsonData.Gender || '';
 
       // Check if the condition exists in the JSON data and set the checkbox accordingly
-      document.getElementById('condtion').checked = jsonData.condition || false;
+      document.getElementById('condtion').checked = jsonData.condtion || false;
 
       // Check if the Group exists in the JSON data and set the appropriate radio button
       if (jsonData.Group === 'Yes') {
