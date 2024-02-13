@@ -75,3 +75,118 @@ function clearForm() {
   document.getElementById("No").addEventListener("dblclick", function() {
     this.checked = false;
   });
+
+
+
+
+  const originalElement = document.getElementById('name');
+  let clonedElement = null;
+  
+  originalElement.addEventListener('mousedown', (e) => {
+      const offsetX = e.clientX - originalElement.getBoundingClientRect().left;
+      const offsetY = e.clientY - originalElement.getBoundingClientRect().top;
+  
+      clonedElement = originalElement.cloneNode(true);
+      clonedElement.style.position = 'absolute';
+      clonedElement.style.cursor = 'grabbing';
+      clonedElement.style.left = `${e.clientX - offsetX}px`;
+      clonedElement.style.top = `${e.clientY - offsetY}px`;
+  
+      document.body.appendChild(clonedElement);
+  
+      const handleMouseMove = (event) => {
+          const x = event.clientX - offsetX;
+          const y = event.clientY - offsetY;
+          clonedElement.style.left = `${x}px`;
+          clonedElement.style.top = `${y}px`;
+      };
+  
+      const handleMouseUp = () => {
+          document.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mouseup', handleMouseUp);
+          clonedElement.style.cursor = 'grab';
+          clonedElement = null;
+      };
+  
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+  });
+  
+  const originalSelect = document.getElementById('Gender');
+let clonedSelect = null;
+
+originalSelect.addEventListener('mousedown', (e) => {
+    const offsetX = e.clientX - originalSelect.getBoundingClientRect().left;
+    const offsetY = e.clientY - originalSelect.getBoundingClientRect().top;
+
+    clonedSelect = originalSelect.cloneNode(true);
+    clonedSelect.style.position = 'absolute';
+    clonedSelect.style.cursor = 'grabbing';
+    clonedSelect.style.left = `${e.clientX - offsetX}px`;
+    clonedSelect.style.top = `${e.clientY - offsetY}px`;
+
+    document.body.appendChild(clonedSelect);
+
+    const handleMouseMove = (event) => {
+        const x = event.clientX - offsetX;
+        const y = event.clientY - offsetY;
+        clonedSelect.style.left = `${x}px`;
+        clonedSelect.style.top = `${y}px`;
+    };
+
+    const handleMouseUp = () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+        clonedSelect.style.cursor = 'grab';
+        clonedSelect = null;
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+});
+
+document.querySelectorAll('.draggable').forEach((originalDiv) => {
+    let clonedDiv = null;
+
+    originalDiv.addEventListener('mousedown', (e) => {
+        const offsetX = e.clientX - originalDiv.getBoundingClientRect().left;
+        const offsetY = e.clientY - originalDiv.getBoundingClientRect().top;
+
+        clonedDiv = originalDiv.cloneNode(true);
+        clonedDiv.style.position = 'absolute';
+        clonedDiv.style.cursor = 'grabbing';
+        clonedDiv.style.left = `${e.clientX - offsetX}px`;
+        clonedDiv.style.top = `${e.clientY - offsetY}px`;
+
+        document.body.appendChild(clonedDiv);
+
+        const handleMouseMove = (event) => {
+            const x = event.clientX - offsetX;
+            const y = event.clientY - offsetY;
+            clonedDiv.style.left = `${x}px`;
+            clonedDiv.style.top = `${y}px`;
+        };
+
+        const handleMouseUp = () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            clonedDiv.style.cursor = 'grab';
+            clonedDiv = null;
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    });
+});
+
+
+document.getElementById('saveButton').addEventListener('click', () => {
+    const textField = document.getElementById('name'); // Get the draggable text field element
+
+    // Save the position of the draggable text field in local storage
+    localStorage.setItem('textFieldPosition', JSON.stringify({
+        
+    }));
+
+    alert('Text field position saved successfully!');
+});
