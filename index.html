@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Drag Drop</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/4.13.0/dragula.min.js"></script>
-
+  <style>
+    .draggable {
+      cursor: move;
+    }
+  </style>
   
  
 </head>
@@ -25,29 +28,47 @@
   <div class="relative">
    
     <canvas id="myCanvas" width="400" height="600" class="border-2 border-blue-500 mt-10"></canvas>
-    <input type="text" id="name"  class=" draggable absolute top-2 left-2 px-2 py-1 border border-gray-400 rounded-md" placeholder="Name">
+    <input type="text" id="name" class=" draggable absolute  top-2 left-2 px-2 py-1 border border-gray-400 rounded-md" placeholder="TextField">
+
+
+
+
+
+
+
+
+
     <select id="Gender" class=" draggable absolute top-12 left-2 px-2 py-1 border border-gray-400 rounded-md mt-4">
       <option value="">Gender </option>
       <option value="Male">Male</option>
       <option value="Female">Female</option>
       <option value="Other">Other</option>
     </select>
-    <div class="draggable absolute top-20 left-2  py-2 mt-4">
-      <label for="checkbox" class="mr-4">Terms and condition</label>
-      <input type="checkbox" id="condtion" class="mr-6">
-    </div>
-    <div class="draggable absolute top-24 left-2 py-2  mt-4">
-      <label for="radio1" class="mr-4">Yes</label>
-      <input type="radio" id="Yes" name="Group" class="mr-1 ">
-      <label for="radio2" class="mr-4 ml-4 ">No</label> 
-      <input type="radio" id="No" name="Group">
-    </div>
+    <div class="draggable absolute top-20 left-2 py-2 mt-4" style="margin-top: 30px;">
+        <label for="checkbox" class="mr-4">CheckBox</label>
+        <input type="checkbox" id="condtion" class="mr-6">
+      </div>
+      <div class="draggable absolute top-24 left-2 py-2 mt-4" style="margin-top: 50px;">
+        <label for="radio1" class="mr-4">RadioButton</label>
+        <input type="radio" id="radio1" name="Group" class="mr-1 ">
+       
+      </div>
+      
   </div>
 
   <div id="dropzone" class="dropzone">
    
   </div>
-  
+
+
+
+
+
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/4.13.0/dragula.min.js"></script>
+
   <script src="script.js"></script>
 </body>
 </html>

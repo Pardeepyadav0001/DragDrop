@@ -1,192 +1,157 @@
-// JavaScript code to handle saving data to a JSON file
-window.onload = function() {
-    var canvas = document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
+// Function to save data in JSON format
+function saveData() {
+    var data = {
+        name: document.getElementById("name").value,
+        Gender: document.getElementById("Gender").value,
+        condtion: document.getElementById("condtion").checked,
+        Group: document.querySelector('input[name="Group"]:checked') ? document.querySelector('input[name="Group"]:checked').id : null,
+        draggableItems: []
+    };
 
-    // Function to save data in JSON format
-    function saveData() {
-        var data = {
-            name: document.getElementById("name").value,
-            Gender: document.getElementById("Gender").value,
-            condtion: document.getElementById("condtion").checked,
-            Group: document.querySelector('input[name="Group"]:checked') ? document.querySelector('input[name="Group"]:checked').id : null
-        };
-        var jsonData = JSON.stringify(data);
+    // Add support for draggable items outside the canvas
+    const draggableItems = document.querySelectorAll('.draggable');
+    draggableItems.forEach(function(item) {
+        var id = item.id;
+        var value = item.value; // Assuming the draggable item is an input field
+        var position = { top: item.offsetTop, left: item.offsetLeft };
+        data.draggableItems.push({ id: id, value: value, position: position });
+    });
 
-        // Create a blob with JSON data
-        var blob = new Blob([jsonData], { type: "application/json" });
+    // Add support for draggable Gender dropdown
+    var genderSelect = document.getElementById("Gender");
+    var genderPosition = { top: genderSelect.offsetTop, left: genderSelect.offsetLeft };
+    data.draggableItems.push({ id: "Gender", value: genderSelect.value, position: genderPosition });
 
-        // Create a link element to download the JSON file
-        var a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "data.json";
+    var jsonData = JSON.stringify(data);
 
-        // Append the link to the document and click it programmatically to trigger download
-        document.body.appendChild(a);
-        a.click();
+    // Create a blob with JSON data
+    var blob = new Blob([jsonData], { type: "application/json" });
 
-        // Cleanup
-        document.body.removeChild(a);
-    }
+    // Create a link element to download the JSON file
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "data.json";
 
-   
+    // Append the link to the document and click it programmatically to trigger download
+    document.body.appendChild(a);
+    a.click();
 
-    // Event listener for the "Save" button
-    document.getElementById("saveButton").addEventListener("click", saveData);
-};
-function clearForm() {
-    document.getElementById("name").value = ""; // Clear name input
-    document.getElementById("Gender").selectedIndex = 0; // Reset gender dropdown
-    document.getElementById("condtion").checked = false; // Uncheck terms and condition checkbox
-    document.getElementById("Yes").checked = false; // Uncheck "Yes" radio button
-    document.getElementById("No").checked = false; // Uncheck "No" radio button
-  }
+    // Cleanup
+    document.body.removeChild(a);
+}
 
-  // Bind clearForm function to click event of Clear button
-  document.getElementById("clearButton").addEventListener("click", clearForm);
+// Event listener for the "Save" button
+document.getElementById("saveButton").addEventListener("click", saveData);
 
-  document.getElementById('fileInput').addEventListener('change', function(event) {
+// Event listener for the "Load" button
+document.getElementById('fileInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
     const reader = new FileReader();
 
     reader.onload = function(event) {
-      const jsonData = JSON.parse(event.target.result);
-      document.getElementById('name').value = jsonData.name || '';
-      document.getElementById('Gender').value = jsonData.Gender || '';
+        const jsonData = JSON.parse(event.target.result);
+        document.getElementById('name').value = jsonData.name || '';
+        document.getElementById('Gender').value = jsonData.Gender || '';
+        document.getElementById('condtion').checked = jsonData.condtion || false;
 
-      // Check if the condition exists in the JSON data and set the checkbox accordingly
-      document.getElementById('condtion').checked = jsonData.condtion || false;
+        if (jsonData.Group === 'radio1') {
+            document.getElementById('radio1').checked = true;
+        } 
 
-      // Check if the Group exists in the JSON data and set the appropriate radio button
-      if (jsonData.Group === 'Yes') {
-        document.getElementById('Yes').checked = true;
-      } else if (jsonData.Group === 'No') {
-        document.getElementById('No').checked = true;
-      }
+        // Load draggable items and their positions
+        jsonData.draggableItems.forEach(function(item) {
+            var draggableItem = document.getElementById(item.id);
+            if (draggableItem) {
+                draggableItem.value = item.value;
+                draggableItem.style.position = 'absolute';
+                draggableItem.style.top = item.position.top + 'px';
+                draggableItem.style.left = item.position.left + 'px';
+            }
+        });
     };
 
     reader.readAsText(file);
-  });
-
-  document.getElementById("Yes").addEventListener("dblclick", function() {
-    this.checked = false;
-  });
-  
-  document.getElementById("No").addEventListener("dblclick", function() {
-    this.checked = false;
-  });
-
-
-
-
-  const originalElement = document.getElementById('name');
-  let clonedElement = null;
-  
-  originalElement.addEventListener('mousedown', (e) => {
-      const offsetX = e.clientX - originalElement.getBoundingClientRect().left;
-      const offsetY = e.clientY - originalElement.getBoundingClientRect().top;
-  
-      clonedElement = originalElement.cloneNode(true);
-      clonedElement.style.position = 'absolute';
-      clonedElement.style.cursor = 'grabbing';
-      clonedElement.style.left = `${e.clientX - offsetX}px`;
-      clonedElement.style.top = `${e.clientY - offsetY}px`;
-  
-      document.body.appendChild(clonedElement);
-  
-      const handleMouseMove = (event) => {
-          const x = event.clientX - offsetX;
-          const y = event.clientY - offsetY;
-          clonedElement.style.left = `${x}px`;
-          clonedElement.style.top = `${y}px`;
-      };
-  
-      const handleMouseUp = () => {
-          document.removeEventListener('mousemove', handleMouseMove);
-          document.removeEventListener('mouseup', handleMouseUp);
-          clonedElement.style.cursor = 'grab';
-          clonedElement = null;
-      };
-  
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-  });
-  
-  const originalSelect = document.getElementById('Gender');
-let clonedSelect = null;
-
-originalSelect.addEventListener('mousedown', (e) => {
-    const offsetX = e.clientX - originalSelect.getBoundingClientRect().left;
-    const offsetY = e.clientY - originalSelect.getBoundingClientRect().top;
-
-    clonedSelect = originalSelect.cloneNode(true);
-    clonedSelect.style.position = 'absolute';
-    clonedSelect.style.cursor = 'grabbing';
-    clonedSelect.style.left = `${e.clientX - offsetX}px`;
-    clonedSelect.style.top = `${e.clientY - offsetY}px`;
-
-    document.body.appendChild(clonedSelect);
-
-    const handleMouseMove = (event) => {
-        const x = event.clientX - offsetX;
-        const y = event.clientY - offsetY;
-        clonedSelect.style.left = `${x}px`;
-        clonedSelect.style.top = `${y}px`;
-    };
-
-    const handleMouseUp = () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-        clonedSelect.style.cursor = 'grab';
-        clonedSelect = null;
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
 });
 
-document.querySelectorAll('.draggable').forEach((originalDiv) => {
-    let clonedDiv = null;
+// Clear form function
+function clearForm() {
+    document.getElementById("name").value = ""; // Clear name input
+    document.getElementById("Gender").selectedIndex = 0; // Reset gender dropdown
+    document.getElementById("condtion").checked = false; // Uncheck terms and condition checkbox
+    document.getElementById("radio1").checked = false; // Uncheck "radio1" radio button
+}
 
-    originalDiv.addEventListener('mousedown', (e) => {
-        const offsetX = e.clientX - originalDiv.getBoundingClientRect().left;
-        const offsetY = e.clientY - originalDiv.getBoundingClientRect().top;
+// Bind clearForm function to click event of Clear button
+document.getElementById("clearButton").addEventListener("click", clearForm);
 
-        clonedDiv = originalDiv.cloneNode(true);
-        clonedDiv.style.position = 'absolute';
-        clonedDiv.style.cursor = 'grabbing';
-        clonedDiv.style.left = `${e.clientX - offsetX}px`;
-        clonedDiv.style.top = `${e.clientY - offsetY}px`;
+// Double-click event listeners to uncheck radio buttons
+document.getElementById("radio1").addEventListener("dblclick", function() {
+    this.checked = false;
+});
 
-        document.body.appendChild(clonedDiv);
+
+// Function to handle right-click context menu
+function handleContextMenu(event) {
+    event.preventDefault(); // Prevent default context menu
+    const menu = document.getElementById("contextMenu");
+    menu.style.display = "block";
+    menu.style.left = event.clientX + "px";
+    menu.style.top = event.clientY + "px";
+    menu.dataset.targetId = event.target.id; // Store the id of the target element
+}
+// Function to make elements draggable
+function makeDraggable(element) {
+    let clonedElement = null;
+
+    element.addEventListener('mousedown', (e) => {
+        const offsetX = e.clientX - element.getBoundingClientRect().left;
+        const offsetY = e.clientY - element.getBoundingClientRect().top;
+
+        clonedElement = element.cloneNode(true);
+        clonedElement.style.position = 'absolute';
+        clonedElement.style.cursor = 'grabbing';
+        clonedElement.style.left = `${e.clientX - offsetX}px`;
+        clonedElement.style.top = `${e.clientY - offsetY}px`;
+
+        document.body.appendChild(clonedElement);
 
         const handleMouseMove = (event) => {
             const x = event.clientX - offsetX;
             const y = event.clientY - offsetY;
-            clonedDiv.style.left = `${x}px`;
-            clonedDiv.style.top = `${y}px`;
+            clonedElement.style.left = `${x}px`;
+            clonedElement.style.top = `${y}px`;
         };
 
         const handleMouseUp = () => {
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
-            clonedDiv.style.cursor = 'grab';
-            clonedDiv = null;
+            clonedElement.style.cursor = 'grab';
+            clonedElement = null;
         };
 
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
     });
+}
+
+// Make text fields draggable
+const originalElement = document.getElementById('name');
+makeDraggable(originalElement);
+
+
+
+// Make Gender dropdown draggable
+const genderSelect = document.getElementById('Gender');
+makeDraggable(genderSelect);
+
+// Make checkboxes draggable
+document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+    makeDraggable(checkbox);
 });
 
-
-document.getElementById('saveButton').addEventListener('click', () => {
-    const textField = document.getElementById('name'); // Get the draggable text field element
-
-    // Save the position of the draggable text field in local storage
-    localStorage.setItem('textFieldPosition', JSON.stringify({
-        
-    }));
-
-    alert('Text field position saved successfully!');
+// Make radio buttons draggable
+document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+    makeDraggable(radio);
 });
+
+   
