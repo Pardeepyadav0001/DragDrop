@@ -80,6 +80,7 @@ function displayData() {
 // Call the displayData function whenever needed, such as after saving data
 document.getElementById("saveButton").addEventListener("click", function() {
     displayData();
+    saveData(); // Also save the data
 });
 
 
