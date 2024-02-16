@@ -25,17 +25,14 @@
 
 <br>
 <body class="bg-gray-100  h-screen">
+
+  <div id="displayContent" class=" top-0 left-2 w-1/6 h-full border-l border-gray-300 bg-gray-500">
   <div class="relative">
+
+    <span id="label" class="label hidden text-gray-500 text-sm"></span>
+
+        <input type="text" id="name" class=" draggable absolute  top-2 left-2 px-2 py-1 border border-gray-400 rounded-md" placeholder="TextField">
    
-    <canvas id="myCanvas" width="400" height="600" class="border-2 border-blue-500 mt-10"></canvas>
-    <input type="text" id="name" class=" draggable absolute  top-2 left-2 px-2 py-1 border border-gray-400 rounded-md" placeholder="TextField">
-
-
-
-
-
-
-
 
 
     <select id="Gender" class=" draggable absolute top-12 left-2 px-2 py-1 border border-gray-400 rounded-md mt-4">
@@ -56,16 +53,12 @@
       
   </div>
 
-  <div id="dropzone" class="dropzone">
+</div>
+  <div id="dropzone" class="dropzone"></div>
    
+  <div id="output" class="fixed top-0 right-0 w-1/6 h-full border-l border-gray-300 bg-gray-500">
+    <!-- Content will be displayed here -->
   </div>
-
-
-
-
-
-
-
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/4.13.0/dragula.min.js"></script>
 
