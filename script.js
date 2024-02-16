@@ -66,8 +66,8 @@ function displayData() {
             var label = document.querySelector('label[for="' + item.id + '"]');
             var labelText = label ? label.textContent : item.id;
 
-            // Add label and value to the displayed data
-            dataToDisplay += "<p><strong>" + labelText + ":</strong> " + item.value + "</p>";
+            // Add ID, label, and value to the displayed data
+            dataToDisplay += "<p><strong>ID:</strong> " + item.id + ", <strong>Label:</strong> " + labelText + ", <strong>Value:</strong> " + item.value + "</p>";
         });
 
         // Update content of the output div
@@ -80,8 +80,8 @@ function displayData() {
 // Call the displayData function whenever needed, such as after saving data
 document.getElementById("saveButton").addEventListener("click", function() {
     displayData();
-    saveData(); // Also save the data
 });
+
 
 
 
