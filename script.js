@@ -8,14 +8,36 @@ function saveData() {
         draggableItems: []
     };
 
-    // Add support for draggable items outside the canvas
-    const draggableItems = document.querySelectorAll('.draggable');
-    draggableItems.forEach(function (item) {
-        var id = item.id;
-        var value = item.value; // Assuming the draggable item is an input field
-        var position = { top: item.offsetTop, left: item.offsetLeft };
-        data.draggableItems.push({ id: id, value: value, position: position });
-    });
+  // Add support for draggable items outside the canvas
+const draggableItems = document.querySelectorAll('.draggable');
+draggableItems.forEach(function (item) {
+    var id = item.id;
+    var value = item.value; // Assuming the draggable item is an input field
+    var position = { top: item.offsetTop, left: item.offsetLeft };
+    data.draggableItems.push({ id: id, value: value, position: position });
+});
+
+// Add support for saving labels for checkboxes and radio buttons
+var checkboxLabels = document.querySelectorAll('input[type="checkbox"] + label');
+checkboxLabels.forEach(function(label) {
+    var forId = label.getAttribute('for');
+    var checkbox = document.getElementById(forId);
+    if (checkbox) {
+        var labelText = label.textContent;
+        data.draggableItems.push({ id: forId, type: "checkbox", value: labelText, checked: checkbox.checked });
+    }
+});
+
+var radioLabels = document.querySelectorAll('input[type="radio"] + label');
+radioLabels.forEach(function(label) {
+    var forId = label.getAttribute('for');
+    var radioButton = document.getElementById(forId);
+    if (radioButton) {
+        var labelText = label.textContent;
+        data.draggableItems.push({ id: forId, type: "radio", value: labelText, checked: radioButton.checked });
+    }
+});
+
 
     // Add support for draggable Gender dropdown
     var genderSelect = document.getElementById("Gender");
@@ -30,9 +52,15 @@ function saveData() {
      var textField = document.getElementById(forId);
      if (textField) {
          var labelText = label.textContent;
+         
          data.draggableItems.push({ id: forId + '', value: labelText });
      }
  });
+
+
+
+
+
 
 
 
@@ -70,12 +98,28 @@ function displayData() {
             dataToDisplay += "<p><strong>ID:</strong> " + item.id + ", <strong>Label:</strong> " + labelText + ", <strong>Value:</strong> " + item.value + "</p>";
         });
 
+        // Retrieve data from checkboxes and radio buttons
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(function(checkbox) {
+            var label = document.querySelector('label[for="' + checkbox.id + '"]');
+            var labelText = label ? label.textContent : checkbox.id;
+            dataToDisplay += "<p><strong>ID:</strong> " + checkbox.id + ", <strong>Label:</strong> " + labelText + ", <strong>Value:</strong> " + checkbox.value + ", <strong>Checked:</strong> " + (checkbox.checked ? "Yes" : "No") + "</p>";
+        });
+
+        var radios = document.querySelectorAll('input[type="radio"]');
+        radios.forEach(function(radio) {
+            var label = document.querySelector('label[for="' + radio.id + '"]');
+            var labelText = label ? label.textContent : radio.id;
+            dataToDisplay += "<p><strong>ID:</strong> " + radio.id + ", <strong>Label:</strong> " + labelText + ", <strong>Value:</strong> " + radio.value + ", <strong>Checked:</strong> " + (radio.checked ? "Yes" : "No") + "</p>";
+        });
+
         // Update content of the output div
         outputDiv.innerHTML = dataToDisplay;
     } else {
         console.error("Output div not found.");
     }
 }
+
 
 // Call the displayData function whenever needed, such as after saving data
 document.getElementById("saveButton").addEventListener("click", function() {
@@ -326,6 +370,70 @@ document.addEventListener('contextmenu', function (event) {
 
 
 
+
+// Function to add an option to a select element
+function addOption(selectId, option) {
+    var selectElement = document.getElementById(selectId);
+    if (selectElement) {
+        var newOption = document.createElement("option");
+        newOption.text = option;
+        newOption.value = option;
+        selectElement.add(newOption);
+    } else {
+        console.error("Element with ID " + selectId + " not found.");
+    }
+}
+
+
+// Function to show prompt for adding a new option
+function showPrompt(selectId) {
+    var newOption = prompt("Enter the new option:");
+    if (newOption !== null && newOption !== "") {
+        addOption(selectId, newOption);
+    }
+}
+
+// Function to add a label to the select element
+function addLabel(selectId) {
+    var selectElement = document.getElementById(selectId);
+    if (selectElement) {
+        // Remove existing label if any
+        var existingLabel = document.getElementById(selectId + "-label");
+        if (existingLabel) {
+            existingLabel.parentNode.removeChild(existingLabel);
+        }
+
+        var newLabel = prompt("Enter the label:");
+        if (newLabel !== null && newLabel !== "") {
+            var labelElement = document.createElement("label");
+            labelElement.textContent = newLabel;
+            labelElement.id = selectId + "-label"; // Assign an ID to the label
+            labelElement.style.position = "absolute"; // Apply absolute positioning
+            labelElement.style.top = selectElement.offsetTop + 'px'; // Adjust top position to match the select element
+            labelElement.style.left = selectElement.offsetLeft - 100 + 'px'; // Adjust left position as needed
+        
+            selectElement.parentNode.insertBefore(labelElement, selectElement);
+        }
+    } else {
+        console.error("Element with ID " + selectId + " not found.");
+    }
+}
+
+
+// Function to show prompt for adding a new option or label
+function showPrompt(selectId, type) {
+    if (type === 'option') {
+        var newOption = prompt("Enter the new option:");
+        if (newOption !== null && newOption !== "") {
+            addOption(selectId, newOption);
+        }
+    } else if (type === 'label') {
+        addLabel(selectId);
+    }
+}
+
+
+
 // Add event listener for right-click (context menu)
 document.addEventListener('contextmenu', function (event) {
     var target = event.target;
@@ -334,7 +442,9 @@ document.addEventListener('contextmenu', function (event) {
         var selectId = target.id; // Get ID of the clicked select element
         var contextMenu = [
             { label: 'Disable', action: function () { setDisabled(selectId); } },
-            { label: 'Enable', action: function () { setEnabled(selectId); } }
+            { label: 'Enable', action: function () { setEnabled(selectId); } },
+            { label: 'Add Option', action: function () { showPrompt(selectId, 'option'); } }, // Add option to show prompt for adding new option
+            { label: 'Add Label', action: function () { showPrompt(selectId, 'label'); } } // Add option to show prompt for adding new label
         ];
 
         // Create context menu
@@ -376,7 +486,8 @@ document.addEventListener('contextmenu', function (event) {
     if (target.tagName === 'INPUT' && target.type === 'checkbox') {
         event.preventDefault(); // Prevent default context menu
         var checkboxId = target.id; // Get ID of the clicked checkbox
-        var contextMenu = [
+        const contextMenu = [
+            { label: 'Add Label', action: function () { addCheckboxLabel(checkboxId); } },
             { label: 'Read Only', action: function () { setCheckboxReadOnly(checkboxId); } },
             { label: 'Editable', action: function () { setCheckboxEditable(checkboxId); } }
         ];
@@ -412,6 +523,40 @@ document.addEventListener('contextmenu', function (event) {
     }
 });
 
+
+
+// Function to add a label to a checkbox
+function addCheckboxLabel(checkboxId) {
+    const checkbox = document.getElementById(checkboxId);
+    if (checkbox) {
+        // Remove any existing label
+        const existingLabel = document.querySelector('label[for="' + checkboxId + '"]');
+        if (existingLabel) {
+            existingLabel.remove();
+        }
+
+        const newLabel = prompt("Enter the label for the checkbox:");
+        if (newLabel !== null && newLabel !== "") {
+            // Create a new label element
+            const label = document.createElement("label");
+            label.htmlFor = checkboxId;
+            label.textContent = newLabel;
+            label.style.position = 'absolute';
+
+            // Adjust top and left positions
+            label.style.top = checkbox.offsetTop + 'px';
+            label.style.left = checkbox.offsetLeft - 100 + 'px'; // Adjust left position as needed
+
+            // Insert the label after the checkbox
+            checkbox.insertAdjacentElement('afterend', label);
+        }
+    } else {
+        console.error("Checkbox with ID " + checkboxId + " not found.");
+    }
+}
+
+
+
 // Function to set checkbox as read-only
 function setCheckboxReadOnly(checkboxId) {
     var checkbox = document.getElementById(checkboxId);
@@ -439,6 +584,7 @@ document.addEventListener('contextmenu', function (event) {
         event.preventDefault(); // Prevent default context menu
         var radioId = target.id; // Get ID of the clicked radio button
         var contextMenu = [
+            { label: 'Add Label', action: function () { addRadioLabel(radioId); } },
             { label: 'Read Only', action: function () { setRadioReadOnly(radioId); } },
             { label: 'Editable', action: function () { setRadioEditable(radioId); } }
         ];
@@ -495,6 +641,37 @@ function setRadioEditable(radioId) {
     }
 }
 
+
+
+// Function to add a label to a radio button
+function addRadioLabel(radioId) {
+    const radio = document.getElementById(radioId);
+    if (radio) {
+        // Remove any existing label
+        const existingLabel = document.querySelector('label[for="' + radioId + '"]');
+        if (existingLabel) {
+            existingLabel.remove();
+        }
+
+        const newLabel = prompt("Enter the label for the radio button:");
+        if (newLabel !== null && newLabel !== "") {
+            // Create a new label element
+            const label = document.createElement("label");
+            label.htmlFor = radioId;
+            label.textContent = newLabel;
+            label.style.position = 'absolute';
+
+            // Adjust top and left positions
+            label.style.top = radio.offsetTop + 'px';
+            label.style.left = radio.offsetLeft - 100 + 'px'; // Adjust left position as needed
+
+            // Insert the label after the radio button
+            radio.insertAdjacentElement('afterend', label);
+        }
+    } else {
+        console.error("Radio button with ID " + radioId + " not found.");
+    }
+}
 
 
 
