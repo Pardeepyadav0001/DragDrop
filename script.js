@@ -15,6 +15,10 @@ draggableItems.forEach(function (item) {
     var value = item.value; // Assuming the draggable item is an input field
     var position = { top: item.offsetTop, left: item.offsetLeft };
     data.draggableItems.push({ id: id, value: value, position: position });
+
+
+
+    
 });
 
 // Add support for saving labels for checkboxes and radio buttons
@@ -672,6 +676,8 @@ function addRadioLabel(radioId) {
         console.error("Radio button with ID " + radioId + " not found.");
     }
 }
+
+
 
 
 
